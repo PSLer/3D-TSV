@@ -294,9 +294,9 @@ function RecoverCartesianMesh()
 	end
 
 	numNod2ElesVec = zeros(numNodes_,1);
-	for ii=1:numEles_
-		iNodes = eNodMat_(ii,:);
-		numNod2ElesVec(iNodes,:) = numNod2ElesVec(iNodes) + 1;
+	for ii=1:8
+		iNodes = eNodMat_(:,ii);
+		numNod2ElesVec(iNodes) = numNod2ElesVec(iNodes) + 1;
 	end
 	nodesOutline = find(numNod2ElesVec<8);	
 	nodState_ = zeros(numNodes_,1); 
