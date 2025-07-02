@@ -27,13 +27,13 @@ xx_2 yy_2 zz_2
 :
 :
 xx_numVertices yy_numVertices zz_numVertices
-#Vertices numFaces //vertex indices range from 0 ~ numVertices-1
-f_1_1 f_1_2 f_1_3 f_1_4
-f_2_1 f_2_2 f_2_3 f_2_4
+#Faces numFaces //vertex indices range from 0 ~ numVertices-1
+f_1_1 f_1_2 f_1_3
+f_2_1 f_2_2 f_2_3
 :
 :
 :
-f_numFaces_1 f_numFaces_2 f_numFaces_3 f_numFaces_4 
+f_numFaces_1 f_numFaces_2 f_numFaces_3
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Comment
