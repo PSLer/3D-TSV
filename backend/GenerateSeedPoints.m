@@ -11,8 +11,6 @@ function GenerateSeedPoints(seedStrategy, seedDensCtrl)
 	global nely_; 
 	global nelz_;
 	global nodStruct_;
-	global eNodMat_;
-	global numNodes_;
 	global boundaryElements_;
 	global eleCentroidList_;
 	

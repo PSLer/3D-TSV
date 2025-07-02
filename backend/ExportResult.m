@@ -9,9 +9,9 @@ function ExportResult(fileName)
 	global mediumHierarchy_;	
 	global minorHierarchy_; 
 	global PSLsAppearanceOrder_;
-	global surfaceQuadMeshNodeCoords_;
-	global surfaceQuadMeshElements_;	
-	global tracingStepWidth_;
+	global surfaceMeshNodeCoords_;
+	global surfaceMeshElements_;
+
 	lineWidthTube = min([1.5*minimumEpsilon_/5, min(boundingBox_(2,:)-boundingBox_(1,:))/10]);
 	
 	fid = fopen(fileName, 'w');
@@ -98,18 +98,35 @@ function ExportResult(fileName)
 	end
 	
 	%%2. write outline in quad mesh
-	numVtx = size(surfaceQuadMeshNodeCoords_,1);
-	numFace = size(surfaceQuadMeshElements_,1);
-	fprintf(fid, '%s', '#Outline'); 
+	fprintf(fid, '%s', '#Outline');
+	numVtx = size(surfaceMeshNodeCoords_,1);
 	if strcmp(meshType_, 'CARTESIAN_GRID')
 		fprintf(fid, '  %s', 'Cartesian'); 
 	else
 		fprintf(fid, '  %s', 'Unstructured'); 
 	end
+	if strcmp(meshType_, 'CARTESIAN_GRID') || strcmp(meshType_, 'Hex')
+	
+	elseif strcmp(meshType_, 'Tet')
+	
+	else
+		error('Un-supported Mesh type!');
+	end
+	switch meshType_
+		case 'CARTESIAN_GRID'
+			tmpFaces = surfaceMeshElements_(:, [1 2 3 3 4 1]);
+			tmpFaces = reshape(tmpFaces', 3, 2*size(surfaceMeshElements_,1))';
+		case 'Hex'
+			tmpFaces = surfaceMeshElements_(:, [1 2 3 3 4 1]);
+			tmpFaces = reshape(tmpFaces', 3, 2*size(surfaceMeshElements_,1))';
+		case 'Tet'
+			tmpFaces = surfaceMeshElements_;
+	end
+	numFace = size(tmpFaces,1);
 	fprintf(fid, '\n');
 	fprintf(fid, '%s', '#Vertices'); fprintf(fid, ' %d\n', numVtx);
-	fprintf(fid, strcat(outPutFormat, outPutFormat, outPutFormat, '\n'), surfaceQuadMeshNodeCoords_');
+	fprintf(fid, strcat(outPutFormat, outPutFormat, outPutFormat, '\n'), surfaceMeshNodeCoords_');
 	fprintf(fid, '%s', '#Faces'); fprintf(fid, ' %d\n', numFace);
-	fprintf(fid, '%d %d %d %d\n', surfaceQuadMeshElements_'-1);
+	fprintf(fid, '%d %d %d\n', tmpFaces'-1);
 	fclose(fid);
 end

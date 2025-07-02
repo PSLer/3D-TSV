@@ -16,7 +16,7 @@ global TopologyAnalysis_;
 global excludeDegeneratePointsOnBoundary_;
 
 %%1. Import Data
-stressfileName = '../data/demo_data_2D.stress';
+stressfileName = '../data/demoData_2D_Tri_femur.stress';
 ImportStressFields(stressfileName);
 figure; ShowProblemDescription();
 
@@ -35,14 +35,11 @@ figure; ShowPSLs();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function TSV2D(PSLsDensityCtrl, varargin)
 	global boundingBox_;
-	global nodeCoords_;
 	global eleCentroidList_;
 	global numEles_;
-	global boundaryElements_;
 	global eleSizeList_;
 	
 	global mergingThreshold_;
-	global mergingThresholdMap_;
 	global tracingStepWidth_;
 	global integrationStepLimit_;
 	global permittedMaxAdjacentTangentAngleDeviation_;
@@ -252,8 +249,7 @@ function modifiedValences = HighCurvatureModification2D(spps2BeMerged, psDir)
 end
 
 function [potentialDisList, potentialPosList] = GetDisListOfPointList2Curve2D(pointList, curveLine, psDir)
-	global mergingThresholdMap_;
-	global mergingThreshold_;	
+	global mergingThresholdMap_;	
 	disT = (curveLine(:,end-1) - pointList(:,end-1)').^2;
 	disT = disT + (curveLine(:,end) - pointList(:,end)').^2;
 	disT = sqrt(disT);	
@@ -698,33 +694,14 @@ function [bEdgeNodMat, boundaryNodes, nodState] = ExtractBoundaryInformation()
 	end
 	edgeIndices = reshape(edgeIndices(:), 2, numEdgesPerEle_*numEles_)';	
 	tmp = sort(edgeIndices,2);
-	[uniqueEdges, ia, ic] = unique(tmp, 'stable', 'rows');
+	[uniqueEdges, ia, ~] = unique(tmp, 'stable', 'rows');
 	leftEdgeIDs = (1:numEdgesPerEle_*numEles_)'; leftEdgeIDs = setdiff(leftEdgeIDs, ia);
 	leftEdges = tmp(leftEdgeIDs,:);
-	[boundaryEdges, boundaryEdgesIDsInUniqueEdges] = setdiff(uniqueEdges, leftEdges, 'rows');
+	[~, boundaryEdgesIDsInUniqueEdges] = setdiff(uniqueEdges, leftEdges, 'rows');
 	bEdgeNodMat = edgeIndices(ia(boundaryEdgesIDsInUniqueEdges),:);
 	boundaryNodes = unique(bEdgeNodMat);
 	nodState = zeros(numNodes_,1);
 	nodState(boundaryNodes) = 1;	
-end
-
-function meshInfo = ReadFieldAlignedMesh_OBJ(fileName)
-	nodeCoords = []; eNodMat = [];
-	fid = fopen(fileName, 'r');
-	while 1
-		tline = fgetl(fid);
-		if ~ischar(tline),   break,   end  % exit at end of file 
-		ln = sscanf(tline,'%s',1); % line type 
-		switch ln
-			case 'v' % graph vertexs
-				nodeCoords(end+1,1:3) = sscanf(tline(2:end), '%e')';
-			case 'f'
-				eNodMat(end+1,1:4) = sscanf(tline(2:end), '%d')';
-		end
-	end
-	fclose(fid);
-	meshInfo.vertices = nodeCoords;
-	meshInfo.faces = eNodMat;
 end
 
 function [nextElementIndex, p1, opt] = SearchNextIntegratingPointOnUnstructuredMesh(oldElementIndex, physicalCoordinates, sPoint, relocatingP1)
@@ -1343,66 +1320,4 @@ function ShowProblemDescription()
 			'color', [153 153 153]/255, 'LineWidth', 3, 'MarkerSize', 15);		
 	end
 	axis('equal'); axis('tight'); axis('off');	
-end
-
-function ExportPSLs2OBJ(fileName)
-	global majorPSLpool_;
-	global minorPSLpool_;
-
-	delta = 1;
-	PSLs2GraphCoords = [];
-	PSLs2GraphEdges = [];
-	allPSLs = [majorPSLpool_(:); minorPSLpool_(:)];
-	
-	for ii=1:numel(allPSLs)
-		allPSLs(ii).importanceMetric = allPSLs(ii).cartesianStressList.^2;
-		allPSLs(ii).importanceMetric = sum(sum(allPSLs(ii).importanceMetric));
-	end
-	
-	importanceMetric = [allPSLs.importanceMetric];
-	[~, mapVec] = sort(importanceMetric, 'descend');
-	allPSLs = allPSLs(mapVec);
-	
-	numPSLs2Output = numel(allPSLs);
-	% numPSLs2Output = 10;
-	for ii=1:numPSLs2Output
-		samples = 1:delta:size(allPSLs(ii).phyCoordList,1);
-		if samples(end)<size(allPSLs(ii).phyCoordList,1), samples(end+1) = size(allPSLs(ii).phyCoordList,1); end
-		sampledPSLcoordinates = allPSLs(ii).phyCoordList(samples,:);
-		
-		numSampledPSLcoordinates = size(sampledPSLcoordinates,1);
-		if numSampledPSLcoordinates<2, continue; end
-		PSLs2GraphEdges(end+1:end+numSampledPSLcoordinates-1,:) = [1:(numSampledPSLcoordinates-1); 2:numSampledPSLcoordinates]' + size(PSLs2GraphCoords,1);
-		PSLs2GraphCoords(end+1:end+numSampledPSLcoordinates,:) = sampledPSLcoordinates;
-	end
-	
-	fid = fopen(fileName, 'w');
-	for ii=1:size(PSLs2GraphCoords,1)
-		fprintf(fid, '%s ', 'v');
-		fprintf(fid, '%.6e %.6e\n', PSLs2GraphCoords(ii,:));
-	end
-	for ii=1:size(PSLs2GraphEdges,1)
-		fprintf(fid, '%s ', 'l');
-		fprintf(fid, '%d %d\n', PSLs2GraphEdges(ii,:));
-	end	
-	fclose(fid);
-end
-
-function meshInfo = ReadFieldAlignedGraph_OBJ(fileName)
-	nodeCoords = []; eNodMat = [];
-	fid = fopen(fileName, 'r');
-	while 1
-		tline = fgetl(fid);
-		if ~ischar(tline),   break,   end  % exit at end of file 
-		ln = sscanf(tline,'%s',1); % line type 
-		switch ln
-			case 'v' % graph vertexs
-				nodeCoords(end+1,1:2) = sscanf(tline(2:end), '%e')';
-			case 'l'
-				eNodMat(end+1,1:2) = sscanf(tline(2:end), '%d')';
-		end
-	end
-	fclose(fid);
-	meshInfo.vertices = nodeCoords;
-	meshInfo.faces = eNodMat;
 end

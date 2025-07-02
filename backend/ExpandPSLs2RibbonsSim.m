@@ -19,7 +19,6 @@ function [ribbonVertices, facePatches, outlinePatches, faceColors] = ExpandPSLs2
 		%%1. ribbon boundary nodes
 		iPSLength = PSLs(ii).length;
 		iCoordList = zeros(2*iPSLength,3);
-		iDirConsistencyMetric = zeros(iPSLength,3);
 		midPots = PSLs(ii).phyCoordList;
 		
 		dirVecs = PSLs(ii).principalStressList(:,psDir);

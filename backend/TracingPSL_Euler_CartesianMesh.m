@@ -1,7 +1,6 @@
 function [phyCoordList, cartesianStressList, eleIndexList, paraCoordList, vonMisesStressList, principalStressList] = ...
 			TracingPSL_Euler_CartesianMesh(startPoint, iniDir, elementIndex, typePSL, limiSteps)
 	global eNodMat_;
-	global nodeCoords_;
 	global cartesianStressField_;
 	global tracingStepWidth_;
 	global sPoint_;

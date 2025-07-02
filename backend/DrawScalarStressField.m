@@ -1,17 +1,9 @@
 function hd = DrawScalarStressField(stressComponentOpt, varargin)
-	global eNodMat_;
-	global nodeCoords_;
-	global numEles_;
-	global boundaryElements_;
 	global nodState_;
 	global cartesianStressField_;
-
+	global surfaceMeshElements_;
+	global surfaceMeshNodeCoords_;
 	if 1==nargin, axHandle_ = gca; else, axHandle_ = varargin{1}; end
-	patchIndices = eNodMat_(boundaryElements_, [4 3 2 1  5 6 7 8  1 2 6 5  8 7 3 4  5 8 4 1  2 3 7 6])';
-	patchIndices = reshape(patchIndices(:), 4, 6*numel(boundaryElements_));
-	tmp = nodState_(patchIndices); 
-	tmp = sum(tmp,1);
-	boundaryEleFaces = patchIndices(:,find(4==tmp))';
 	
 	cVal = zeros(size(nodState_));
 	boundaryNodes = find(nodState_);
@@ -62,7 +54,7 @@ function hd = DrawScalarStressField(stressComponentOpt, varargin)
 	end
 	
 	colormap(axHandle_, 'jet');
-	hd = patch(axHandle_, 'Faces', boundaryEleFaces, 'Vertices', nodeCoords_, 'FaceVertexCData', cVal);
+	hd = patch(axHandle_, 'Faces', surfaceMeshElements_, 'Vertices', surfaceMeshNodeCoords_, 'FaceVertexCData', cVal(boundaryNodes));
 	set(hd, 'FaceColor', 'interp', 'FaceAlpha', 1.0, 'EdgeColor', 'none');
 	 
 	cb = colorbar(axHandle_, 'Location', 'east', 'AxisLocation','in');

@@ -8,7 +8,6 @@ function DrawPSLs_viaGUI(imOpt, imVal, pslGeo, stressComponentOpt, miniPSLength,
 	%% pslGeo: ["TUBE", "TUBE", "TUBE"]; %% 'TUBE', 'RIBBON'
 	%% stressComponentOpt: %% 'None', 'Sigma', 'Sigma_xx', 'Sigma_yy', 'Sigma_zz', 'Sigma_yz', 'Sigma_zx', 'Sigma_xy', 'Sigma_vM'
 	%% smoothingOpt: %% smoothing ribbon or not (0)
-	global boundingBox_;
 	
 	global majorPSLs_tubeGeometry_gridX_;
 	global majorPSLs_tubeGeometry_gridY_;
@@ -40,7 +39,6 @@ function DrawPSLs_viaGUI(imOpt, imVal, pslGeo, stressComponentOpt, miniPSLength,
 	global majorHierarchy_; 
 	global mediumHierarchy_; 
 	global minorHierarchy_;
-	global minimumEpsilon_;
 	global silhouetteOpacity_;
 	global axHandle_;
 

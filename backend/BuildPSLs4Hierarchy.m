@@ -2,7 +2,6 @@ function BuildPSLs4Hierarchy()
 	global majorPSLpool_; global mediumPSLpool_; global minorPSLpool_;
 	global majorPSLindexList_; global mediumPSLindexList_; global minorPSLindexList_;
 	global majorHierarchy_; global mediumHierarchy_; global minorHierarchy_;
-	global numLevels_;
 		
 	%% IM: 'Pure PSLs Density Ctrl, 1' (Geo), 'Principal Stress, 2' (PS), 'von Mises Stress, 3' (vM), 'PSLs Length, 4' (Length)	
 	numItems = 4;

@@ -22,8 +22,8 @@ global eleSizeList_; %% Element Sizes for Unstructured Hex-mesh
 global integrationStepLimit_; %% Maximum Integration Steps
 global silhouetteStruct_; %% Patches for Draw Silhoutte of Stress Field
 global carNodMapBack_; %% Only for Cartesian Mesh
-global surfaceQuadMeshNodeCoords_;
-global surfaceQuadMeshElements_;
+global surfaceMeshNodeCoords_;
+global surfaceMeshElements_;
 
 %% 2. Algorithm Control
 %% 2.0 Selected Principal Stress Fields to be Visualized

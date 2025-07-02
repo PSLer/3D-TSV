@@ -57,7 +57,6 @@ end
 function [eleIndex, cartesianStress, vonMisesStress, principalStress, opt] = PreparingForTracing(startPoint)
 	global nodeCoords_; 
 	global eNodMat_; 
-	global nodStruct_;
 	global cartesianStressField_;
 	global eleCentroidList_;
 	global meshType_;
@@ -71,7 +70,6 @@ function [eleIndex, cartesianStress, vonMisesStress, principalStress, opt] = Pre
 		if 0==opt, return; end
 		eleIndex = double(targetEleIndex);
 		NIdx = eNodMat_(eleIndex,:)';
-		eleNodeCoords = nodeCoords_(NIdx,:);
 		eleCartesianStress = cartesianStressField_(NIdx,:);				
 		cartesianStress = ElementInterpolationTrilinear(eleCartesianStress, paraCoordinates);
 	else
