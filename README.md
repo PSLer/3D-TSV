@@ -133,7 +133,6 @@ We provide a script written in APDL (`./backend/Ansys2TSV3D.mac`), which can aut
 information from the ANSYS environment and write it into the required format for 3D-TSV.
 
 [![3D-TSV Guidelines for ANSYS Mechanical APDL User (Video)](https://img.youtube.com/vi/Yri_B7m3AWU/maxresdefault.jpg)](https://youtu.be/Yri_B7m3AWU)
-The corresponding stress data can be founded in the directory 'demo_data_Ansys (Please Unzip it).zip' 
 
 ## 6.2 ABAQUS user
 
