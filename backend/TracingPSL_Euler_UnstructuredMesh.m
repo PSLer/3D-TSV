@@ -5,6 +5,8 @@ function [phyCoordList, cartesianStressList, eleIndexList, paraCoordList, vonMis
 	global cartesianStressField_;
 	global tracingStepWidth_;
 	global sPoint_;
+	global nodeWiseStressField_;
+	
 	siE = 1.0e-06;
 	phyCoordList = zeros(limiSteps,3);
 	cartesianStressList = zeros(limiSteps,6);
@@ -16,11 +18,15 @@ function [phyCoordList, cartesianStressList, eleIndexList, paraCoordList, vonMis
 	[elementIndex, nextPoint, bool1] = SearchNextIntegratingPointOnUnstructuredMesh(elementIndex, nextPoint, startPoint, 1);
 	index = 0;	
 	while 1==bool1
-		index = index + 1; if index > limiSteps, index = index-1; break; end		
-		NIdx = eNodMat_(elementIndex,:)';
-		vtxStress = cartesianStressField_(NIdx, :);
-		vtxCoords = nodeCoords_(NIdx,:); 
-		cartesianStressOnGivenPoint = ElementInterpolationInverseDistanceWeighting(vtxCoords, vtxStress, nextPoint); 
+		index = index + 1; if index > limiSteps, index = index-1; break; end
+		if nodeWiseStressField_
+			NIdx = eNodMat_(elementIndex,:)';
+			vtxStress = cartesianStressField_(NIdx, :);
+			vtxCoords = nodeCoords_(NIdx,:); 
+			cartesianStressOnGivenPoint = ElementInterpolationInverseDistanceWeighting(vtxCoords, vtxStress, nextPoint); 
+		else
+			cartesianStressOnGivenPoint = cartesianStressField_(elementIndex, :);
+		end
 		vonMisesStress = ComputeVonMisesStress(cartesianStressOnGivenPoint);
 		principalStress = ComputePrincipalStress(cartesianStressOnGivenPoint);
 		evs = principalStress([1 5 9]);

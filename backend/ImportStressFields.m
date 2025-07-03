@@ -28,6 +28,7 @@ function ImportStressFields(fileName)
 	global numFacesPerEle_;
 	global numNodesPerFace_;
 	global eleFaceIndices_;
+	global nodeWiseStressField_;
 	%%Read mesh and cartesian stress field
 	[~,~,dataType] = fileparts(fileName);
 	switch dataType
@@ -39,6 +40,14 @@ function ImportStressFields(fileName)
 			while idx
 				idx = idx + 1;
 				tmp = fscanf(fid, '%s', 1);
+				if strcmp(tmp, 'Type:')
+					type = fscanf(fid, '%s', 1);
+					switch type
+						case 'NODE', nodeWiseStressField_ = 1;
+						case 'ELEMENT', nodeWiseStressField_ = 0; %%Element-wise Stress Data
+						otherwise, error('Un-supported Stress Data!');
+					end						
+				end
 				if strcmp(tmp, 'Resolution:'), idx=0; break; end
 				if idx>100, error('Wrong Input!'); end
 			end
@@ -52,7 +61,8 @@ function ImportStressFields(fileName)
 			numValidEles = fscanf(fid, '%d', 1);
 			tmp = fscanf(fid, '%s', 1);
 			validElements = fscanf(fid, '%d', [1, numValidEles])';
-			validElements = validElements + 1;
+            % validElements = validElements + 1;
+			% if 0==min(validElements), validElements = validElements + 1; end	
 			cellVolume = zeros(nelx_*nely_*nelz_,1);
 			cellVolume(validElements) = 1;
 			voxelizedVolume_ = reshape(cellVolume, nely_, nelx_, nelz_);	
@@ -61,21 +71,22 @@ function ImportStressFields(fileName)
 			tmp = fscanf(fid, '%s %s %s %s %d', 5);
 			tmp = fscanf(fid, '%s %s', 2); numLoadedNodes = fscanf(fid, '%d', 1);
 			if numLoadedNodes>0
-				tmp = fscanf(fid, '%d %f %f %f', [4, numLoadedNodes]); 
-				tmp(1,:) = tmp(1,:)+1; 
-				loadingCond_ = tmp';
+				loadingCond_ = fscanf(fid, '%d %f %f %f', [4, numLoadedNodes])'; 
+                % loadingCond_(:,1) = loadingCond_(:,1)+1;
+				% if 0==min(loadingCond_(:,1)), loadingCond_(:,1) = loadingCond_(:,1)+1; end	
 			else
 				loadingCond_ = [];
 			end
 			tmp = fscanf(fid, '%s %s', 2); numFixedNodes = fscanf(fid, '%d', 1);
 			if numFixedNodes>0
-				tmp = fscanf(fid, '%d', [1, numFixedNodes]); 
-				fixingCond_ = tmp'+1;
+				fixingCond_ = fscanf(fid, '%d', [1, numFixedNodes])';
+             	% fixingCond_ = fixingCond_+1;
+				% if 0==min(fixingCond_), fixingCond_ = fixingCond_+1; end
 			else
 				fixingCond_ = [];
 			end
-			tmp = fscanf(fid, '%s %s', 2); numValidNods = fscanf(fid, '%d', 1);
-			cartesianStressField_ = fscanf(fid, '%e %e %e %e %e %e', [6, numValidNods])';	
+			tmp = fscanf(fid, '%s %s', 2); numStressComponents = fscanf(fid, '%d', 1);
+			cartesianStressField_ = fscanf(fid, '%e %e %e %e %e %e', [6, numStressComponents])';	
 			fclose(fid);				
 			%%Recover Cartesian Mesh
 			RecoverCartesianMesh();
@@ -83,6 +94,13 @@ function ImportStressFields(fileName)
 		case '.stress'
 			fid = fopen(fileName, 'r');
 			fgetl(fid);
+			tmp = fscanf(fid, '%s %s %s', 3);
+			type = fscanf(fid, '%s', 1);
+			switch type
+				case 'NODE', nodeWiseStressField_ = 1;
+				case 'ELEMENT', nodeWiseStressField_ = 0; %%Element-wise Stress Data
+				otherwise, error('Un-supported Stress Data!');
+			end			
 			domainType = fscanf(fid, '%s', 1);
 			if ~strcmp(domainType, 'Solid'), warning('Un-supported Data!'); return; end			
 			meshType_ = fscanf(fid, '%s', 1);
@@ -114,8 +132,8 @@ function ImportStressFields(fileName)
 
 			startReadingStress = fscanf(fid, '%s %s', 2); 
 			if ~strcmp(startReadingStress, 'CartesianStress:'), warning('Un-supported Data!'); return; end
-			numValidNods = fscanf(fid, '%d', 1);
-			cartesianStressField_ = fscanf(fid, '%e %e %e %e %e %e', [6, numValidNods])';		
+			numStressComponents = fscanf(fid, '%d', 1);
+			cartesianStressField_ = fscanf(fid, '%e %e %e %e %e %e', [6, numStressComponents])';		
 			fclose(fid);
 			boundingBox_ = [min(nodeCoords_, [], 1); max(nodeCoords_, [], 1)];
 			eleSize_ = max(boundingBox_(2,:)-boundingBox_(1,:))/100;		

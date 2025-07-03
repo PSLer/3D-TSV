@@ -60,7 +60,8 @@ function [eleIndex, cartesianStress, vonMisesStress, principalStress, opt] = Pre
 	global cartesianStressField_;
 	global eleCentroidList_;
 	global meshType_;
-
+	global nodeWiseStressField_;
+	
 	eleIndex = 0;
 	cartesianStress = 0;
 	vonMisesStress = 0; 
@@ -68,10 +69,14 @@ function [eleIndex, cartesianStress, vonMisesStress, principalStress, opt] = Pre
 	if strcmp(meshType_, 'CARTESIAN_GRID')	
 		[targetEleIndex, paraCoordinates, opt] = SearchNextIntegratingPointOnCartesianMesh(startPoint(end-2:end));	
 		if 0==opt, return; end
-		eleIndex = double(targetEleIndex);
-		NIdx = eNodMat_(eleIndex,:)';
-		eleCartesianStress = cartesianStressField_(NIdx,:);				
-		cartesianStress = ElementInterpolationTrilinear(eleCartesianStress, paraCoordinates);
+		if nodeWiseStressField_
+			eleIndex = double(targetEleIndex);
+			NIdx = eNodMat_(eleIndex,:)';
+			eleCartesianStress = cartesianStressField_(NIdx,:);				
+			cartesianStress = ElementInterpolationTrilinear(eleCartesianStress, paraCoordinates);		
+		else
+			cartesianStress = cartesianStressField_(eleIndex,:);
+		end
 	else
 		switch numel(startPoint)
 			case 3
@@ -86,10 +91,14 @@ function [eleIndex, cartesianStress, vonMisesStress, principalStress, opt] = Pre
 			otherwise
 				error('Wrong Input For the Seed!')
 		end
-		NIdx = eNodMat_(eleIndex,:)';
-		eleNodeCoords = nodeCoords_(NIdx,:);
-		eleCartesianStress = cartesianStressField_(NIdx,:);			
-		cartesianStress = ElementInterpolationInverseDistanceWeighting(eleNodeCoords, eleCartesianStress, startPoint);			
+		if nodeWiseStressField_
+			NIdx = eNodMat_(eleIndex,:)';
+			eleNodeCoords = nodeCoords_(NIdx,:);
+			eleCartesianStress = cartesianStressField_(NIdx,:);			
+			cartesianStress = ElementInterpolationInverseDistanceWeighting(eleNodeCoords, eleCartesianStress, startPoint);					
+		else
+			cartesianStress = cartesianStressField_(eleIndex,:);
+		end
 	end
 	vonMisesStress = ComputeVonMisesStress(cartesianStress);
 	principalStress = ComputePrincipalStress(cartesianStress);		

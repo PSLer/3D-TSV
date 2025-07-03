@@ -1,7 +1,8 @@
 %% This script declares some global variables for this program
 
 %% 1. Dataset info.
-global dataName_; 
+global dataName_;
+global nodeWiseStressField_;
 global meshType_;
 global boundingBox_; 
 global nelx_; 

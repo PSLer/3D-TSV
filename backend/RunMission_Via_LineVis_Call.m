@@ -7,6 +7,7 @@ function [opt, pslDataNameOutput] = RunMission_Via_LineVis_Call(userInterface)
 	global majorPSLindexList_;
 	global mediumPSLindexList_;
 	global minorPSLindexList_;
+	global nodeWiseStressField_;
 	
 	%%1. Initialize Experiment Environment
 	%%1.1 Variable Declaration	
@@ -53,13 +54,19 @@ function [opt, pslDataNameOutput] = RunMission_Via_LineVis_Call(userInterface)
 			case 'Euler', tracingFuncHandle_ = @TracingPSL_Euler_CartesianMesh;
 			case 'RK2', tracingFuncHandle_ = @TracingPSL_RK2_CartesianMesh;
 			case 'RK4', tracingFuncHandle_ = @TracingPSL_RK4_CartesianMesh;
-		end	
+		end
+		if ~nodeWiseStressField_
+			tracingFuncHandle_ = @TracingPSL_Euler_CartesianMesh;
+		end
 	else
 		switch traceAlg_
 			case 'Euler', tracingFuncHandle_ = @TracingPSL_Euler_UnstructuredMesh;
 			case 'RK2', tracingFuncHandle_ = @TracingPSL_RK2_UnstructuredMesh;
 			case 'RK4', tracingFuncHandle_ = @TracingPSL_RK4_UnstructuredMesh;
-		end		
+		end
+		if ~nodeWiseStressField_
+			tracingFuncHandle_ = @TracingPSL_Euler_UnstructuredMesh;
+		end
 	end	
 
 	%%2. Seeding

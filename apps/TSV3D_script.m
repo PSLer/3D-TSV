@@ -17,16 +17,16 @@ userInterface = InterfaceStruct();
 
 %% Some Examples used in the paper
 %% =======================================kitten=======================================
-userInterface.fileName = '../data/kitten.stress';
-userInterface.lineDensCtrl = 20;
-userInterface.numLevels = 1;
-userInterface.seedStrategy = 'Volume';
-userInterface.seedDensCtrl = 2;
-userInterface.selectedPrincipalStressField = [3];
-userInterface.mergingOpt = 1;
-userInterface.snappingOpt = 0;
-userInterface.maxAngleDevi = 6;
-userInterface.traceAlgorithm = 'RK2';
+% userInterface.fileName = '../data/kitten.stress';
+% userInterface.lineDensCtrl = 20;
+% userInterface.numLevels = 1;
+% userInterface.seedStrategy = 'Volume';
+% userInterface.seedDensCtrl = 2;
+% userInterface.selectedPrincipalStressField = [3];
+% userInterface.mergingOpt = 1;
+% userInterface.snappingOpt = 0;
+% userInterface.maxAngleDevi = 6;
+% userInterface.traceAlgorithm = 'RK2';
 
 
 %% =======================================cantilever=======================================
@@ -94,16 +94,16 @@ userInterface.traceAlgorithm = 'RK2';
 
 
 %% =======================================bracket=======================================
-% userInterface.fileName = '../data/bracket.carti';
-% userInterface.lineDensCtrl = 12;
-% userInterface.numLevels = 3;
-% userInterface.seedStrategy = 'Volume';
-% userInterface.seedDensCtrl = 4;
-% userInterface.selectedPrincipalStressField = [1, 3];
-% userInterface.mergingOpt = 1;
-% userInterface.snappingOpt = 0;
-% userInterface.maxAngleDevi = 6;
-% userInterface.traceAlgorithm = 'RK2';
+userInterface.fileName = '../data/bracket.carti';
+userInterface.lineDensCtrl = 12;
+userInterface.numLevels = 3;
+userInterface.seedStrategy = 'Volume';
+userInterface.seedDensCtrl = 4;
+userInterface.selectedPrincipalStressField = [1, 3];
+userInterface.mergingOpt = 1;
+userInterface.snappingOpt = 0;
+userInterface.maxAngleDevi = 6;
+userInterface.traceAlgorithm = 'RK2';
 
 
 %% =======================================parts1=======================================

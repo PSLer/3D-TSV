@@ -10,7 +10,7 @@ global minorPSLpool_;
 
 
 %%1. Import Data
-stressfileName = '../data/demoData_3D_Tet_femur.stress';
+stressfileName = '../data/demoData_3D_Tet_Bone_eleWise.stress';
 ImportStressFields(stressfileName);
 figure; ShowProblemDescription();
 
@@ -365,7 +365,8 @@ function [eleIndex, cartesianStress, principalStress, opt] = PreparingForTracing
 	global eNodMat_;
 	global cartesianStressField_;
 	global eleCentroidList_;
-
+	global nodeWiseStressField_;
+	
 	eleIndex = 0;
 	cartesianStress = 0;
 	principalStress = 0;	
@@ -382,10 +383,14 @@ function [eleIndex, cartesianStress, principalStress, opt] = PreparingForTracing
 		otherwise
 			error('Wrong Input For the Seed!')
 	end
-	NIdx = eNodMat_(eleIndex,:)';
-	eleNodeCoords = nodeCoords_(NIdx,:);
-	eleCartesianStress = cartesianStressField_(NIdx,:);			
-	cartesianStress = ElementInterpolationInverseDistanceWeighting(eleNodeCoords, eleCartesianStress, startPoint);	
+	if nodeWiseStressField_
+		NIdx = eNodMat_(eleIndex,:)';
+		eleNodeCoords = nodeCoords_(NIdx,:);
+		eleCartesianStress = cartesianStressField_(NIdx,:);			
+		cartesianStress = ElementInterpolationInverseDistanceWeighting(eleNodeCoords, eleCartesianStress, startPoint);
+	else
+		cartesianStress = cartesianStressField_(eleIndex,:);
+	end
 	principalStress = ComputePrincipalStress(cartesianStress);		
 end
 
@@ -459,6 +464,8 @@ function [phyCoordList, cartesianStressList, eleIndexList, principalStressList] 
 	global nodeCoords_;
 	global cartesianStressField_;
 	global tracingStepWidth_;
+	global nodeWiseStressField_;
+	
 	phyCoordList = zeros(limiSteps,3);
 	cartesianStressList = zeros(limiSteps,6);
 	eleIndexList = zeros(limiSteps,1);
@@ -476,20 +483,28 @@ function [phyCoordList, cartesianStressList, eleIndexList, principalStressList] 
 		midPot = startPoint + k1*stepsize/2;
 		[elementIndex2, ~, bool2] = SearchNextIntegratingPointOnUnstructuredMesh(elementIndex, midPot, startPoint, 0);
 		if bool2 %%just in case
-			NIdx = eNodMat_(elementIndex2,:)';
-			vtxStress = cartesianStressField_(NIdx, :);
-			vtxCoords = nodeCoords_(NIdx,:);
-			cartesianStressOnGivenPoint = ElementInterpolationInverseDistanceWeighting(vtxCoords, vtxStress, midPot);
+			if nodeWiseStressField_
+				NIdx = eNodMat_(elementIndex2,:)';
+				vtxStress = cartesianStressField_(NIdx,:);
+				vtxCoords = nodeCoords_(NIdx,:);
+				cartesianStressOnGivenPoint = ElementInterpolationInverseDistanceWeighting(vtxCoords, vtxStress, midPot);			
+			else
+				cartesianStressOnGivenPoint = cartesianStressField_(elementIndex2,:);
+			end
 			principalStress = ComputePrincipalStress(cartesianStressOnGivenPoint);
 			[k2, ~] = BidirectionalFeatureProcessing(k1, principalStress(typePSL));
 			nextPoint = startPoint + stepsize*k2;
 			[elementIndex, ~, bool3] = SearchNextIntegratingPointOnUnstructuredMesh(elementIndex, nextPoint, startPoint, 0);
 			while bool3
 				index = index + 1; if index > limiSteps, index = index-1; break; end
-				NIdx = eNodMat_(elementIndex,:)';
-				vtxStress = cartesianStressField_(NIdx, :);
-				vtxCoords = nodeCoords_(NIdx,:); 
-				cartesianStressOnGivenPoint = ElementInterpolationInverseDistanceWeighting(vtxCoords, vtxStress, nextPoint); 
+				if nodeWiseStressField_
+					NIdx = eNodMat_(elementIndex,:)';
+					vtxStress = cartesianStressField_(NIdx,:);
+					vtxCoords = nodeCoords_(NIdx,:); 
+					cartesianStressOnGivenPoint = ElementInterpolationInverseDistanceWeighting(vtxCoords, vtxStress, nextPoint); 				
+				else
+					cartesianStressOnGivenPoint = cartesianStressField_(elementIndex,:);
+				end				
 				principalStress = ComputePrincipalStress(cartesianStressOnGivenPoint);	
 				%%k1
 				[k1, terminationCond] = BidirectionalFeatureProcessing(iniDir, principalStress(typePSL));	
@@ -503,11 +518,15 @@ function [phyCoordList, cartesianStressList, eleIndexList, principalStressList] 
 				stepsize = norm(testPot1-nextPoint)/norm(testPot-nextPoint) * stepsize;
 				midPot = nextPoint + k1*stepsize/2;
 				[elementIndex2, ~, bool1] = SearchNextIntegratingPointOnUnstructuredMesh(elementIndex, midPot, nextPoint, 0);					
-				if ~bool1, index = index-1; break; end	
-				NIdx2 = eNodMat_(elementIndex2,:)';	
-				vtxStress2 = cartesianStressField_(NIdx2,:);
-				vtxCoords2 = nodeCoords_(NIdx2,:);
-				cartesianStressOnGivenPoint2 = ElementInterpolationInverseDistanceWeighting(vtxCoords2, vtxStress2, midPot);
+				if ~bool1, index = index-1; break; end
+				if nodeWiseStressField_
+					NIdx2 = eNodMat_(elementIndex2,:)';	
+					vtxStress2 = cartesianStressField_(NIdx2,:);
+					vtxCoords2 = nodeCoords_(NIdx2,:);
+					cartesianStressOnGivenPoint2 = ElementInterpolationInverseDistanceWeighting(vtxCoords2, vtxStress2, midPot);				
+				else
+					cartesianStressOnGivenPoint2 = cartesianStressField_(elementIndex2,:);
+				end					
 				principalStress2 = ComputePrincipalStress(cartesianStressOnGivenPoint2);
 				[k2, ~] = BidirectionalFeatureProcessing(k1, principalStress2(typePSL));					
 				%%store	
@@ -712,11 +731,19 @@ function ImportStressFields(fileName)
 	global numNodesPerEle_;
 	global numFacesPerEle_;
 	global numNodesPerFace_;
-	global eleFaceIndices_;	
+	global eleFaceIndices_;
+	global nodeWiseStressField_;
 	%%Read mesh and cartesian stress field
 	fid = fopen(fileName, 'r');
 	%%Mesh
-	fgetl(fid); 
+	fgetl(fid);
+	tmp = fscanf(fid, '%s %s %s', 3);
+	type = fscanf(fid, '%s', 1);
+	switch type
+		case 'NODE', nodeWiseStressField_ = 1;
+		case 'ELEMENT', nodeWiseStressField_ = 0; %%Element-wise Stress Data
+		otherwise, error('Un-supported Stress Data!');
+	end	
 	domainType = fscanf(fid, '%s', 1);
 	if ~strcmp(domainType, 'Solid'), warning('Un-supported Data!'); return; end
 	meshType_ = fscanf(fid, '%s', 1);
