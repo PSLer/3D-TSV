@@ -1,4 +1,4 @@
-# 3D-TSV
+# 3D-TSV (https://psler.github.io/branch_TSV.html)
 
 The 3D Trajectory-based Stress Visualizer (3D-TSV), a visual analysis tool for the exploration of the principal stress
 directions in 3D solids under load.
@@ -16,7 +16,6 @@ This repository was created for the paper:
 }
 
 
-
 ## 1. Functionality
 
 - Visualizing a stress tensor field simulated on a hexahedral mesh via trajectories;
@@ -25,6 +24,9 @@ This repository was created for the paper:
   and minor) are advocated;
 - Providing a nested hierarchical PSL representation that is used to control focus and context via varying PSL density;
 
+## 1.1 Updates (2025.07.03)
+- More functionalities are added: work with stress fields defined at nodes/elements of the 1st-order hex-, tet-meshes in 3D and quad-, tri-meshes in 2D
+- (Especially to the old users) Data formats are slightly adjusted to fit the newly introduced functionalities, please refer to the latest datasets in the code repository.
 
 ## 2. Input Format
 
@@ -116,8 +118,7 @@ Go to directory `./apps` to select the application you want to use.
 
 ## 5. Data sets
 
-More stress field data sets are provided on the following file share:
-https://syncandshare.lrz.de/getlink/fi4W4EGjZSzMzCvxkEf9L3Aw/
+All demo datasets are included in the code repository.
 
 
 ## 6. Adaptation to Common FEA Tools
