@@ -16,7 +16,7 @@ global TopologyAnalysis_;
 global excludeDegeneratePointsOnBoundary_;
 
 %%1. Import Data
-stressfileName = '../data/demoData_3D_Tet_Femur.TSV';
+stressfileName = '../data/demoData_2D_Tri_Femur.TSV';
 ImportStressFields(stressfileName);
 figure; ShowProblemDescription();
 
