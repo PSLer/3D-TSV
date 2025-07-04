@@ -17,20 +17,20 @@ userInterface = InterfaceStruct();
 
 %% Some Examples used in the paper
 %% =======================================kitten=======================================
-% userInterface.fileName = '../data/kitten.stress';
-% userInterface.lineDensCtrl = 20;
-% userInterface.numLevels = 1;
-% userInterface.seedStrategy = 'Volume';
-% userInterface.seedDensCtrl = 2;
-% userInterface.selectedPrincipalStressField = [3];
-% userInterface.mergingOpt = 1;
-% userInterface.snappingOpt = 0;
-% userInterface.maxAngleDevi = 6;
-% userInterface.traceAlgorithm = 'RK2';
+userInterface.fileName = '../data/kitten.TSV';
+userInterface.lineDensCtrl = 20;
+userInterface.numLevels = 1;
+userInterface.seedStrategy = 'Volume';
+userInterface.seedDensCtrl = 2;
+userInterface.selectedPrincipalStressField = [3];
+userInterface.mergingOpt = 1;
+userInterface.snappingOpt = 0;
+userInterface.maxAngleDevi = 6;
+userInterface.traceAlgorithm = 'RK2';
 
 
 %% =======================================cantilever=======================================
-% userInterface.fileName = '../data/cantilever3D.carti';
+% userInterface.fileName = '../data/cantilever3D.TSVcarti';
 % userInterface.lineDensCtrl = 5; 
 % userInterface.numLevels = 1;
 % userInterface.seedStrategy = 'Volume';
@@ -44,7 +44,7 @@ userInterface = InterfaceStruct();
 
 %% =======================================arched_bridge=======================================
 %% ---------------------------------------Experiment 1: (fig. 3)
-% userInterface.fileName = '../data/arched_bridge.carti';
+% userInterface.fileName = '../data/arched_bridge.TSVcarti';
 % userInterface.lineDensCtrl = 6; 
 % userInterface.numLevels = 1;
 % userInterface.seedStrategy = 'Volume';
@@ -55,7 +55,7 @@ userInterface = InterfaceStruct();
 % userInterface.maxAngleDevi = 20; 
 % userInterface.traceAlgorithm = 'RK2';
 %% ---------------------------------------Experiment 2: (fig.4)
-% userInterface.fileName = '../data/arched_bridge.carti';
+% userInterface.fileName = '../data/arched_bridge.TSVcarti';
 % userInterface.lineDensCtrl = 24; 
 % userInterface.numLevels = 4;
 % userInterface.seedStrategy = 'Volume';
@@ -81,7 +81,7 @@ userInterface = InterfaceStruct();
 
 
 %% =======================================femur=======================================
-% userInterface.fileName = '../data/femur.carti';
+% userInterface.fileName = '../data/femur.TSVcarti';
 % userInterface.lineDensCtrl = 18;
 % userInterface.numLevels = 3;
 % userInterface.seedStrategy = 'Volume';
@@ -94,20 +94,20 @@ userInterface = InterfaceStruct();
 
 
 %% =======================================bracket=======================================
-userInterface.fileName = '../data/bracket.carti';
-userInterface.lineDensCtrl = 12;
-userInterface.numLevels = 3;
-userInterface.seedStrategy = 'Volume';
-userInterface.seedDensCtrl = 4;
-userInterface.selectedPrincipalStressField = [1, 3];
-userInterface.mergingOpt = 1;
-userInterface.snappingOpt = 0;
-userInterface.maxAngleDevi = 6;
-userInterface.traceAlgorithm = 'RK2';
+% userInterface.fileName = '../data/bracket.TSVcarti';
+% userInterface.lineDensCtrl = 12;
+% userInterface.numLevels = 3;
+% userInterface.seedStrategy = 'Volume';
+% userInterface.seedDensCtrl = 4;
+% userInterface.selectedPrincipalStressField = [1, 3];
+% userInterface.mergingOpt = 1;
+% userInterface.snappingOpt = 0;
+% userInterface.maxAngleDevi = 6;
+% userInterface.traceAlgorithm = 'RK2';
 
 
 %% =======================================parts1=======================================
-% userInterface.fileName = '../data/parts1.stress';
+% userInterface.fileName = '../data/parts1.TSV';
 % userInterface.lineDensCtrl = 30;
 % userInterface.numLevels = 3;
 % userInterface.seedStrategy = 'Volume';
@@ -119,7 +119,7 @@ userInterface.traceAlgorithm = 'RK2';
 % userInterface.traceAlgorithm = 'RK2';
 
 %% =======================================bearing=======================================
-% userInterface.fileName = '../data/bearing.stress';
+% userInterface.fileName = '../data/bearing.TSV';
 % userInterface.lineDensCtrl = 21;
 % userInterface.numLevels = 3;
 % userInterface.seedStrategy = 'Volume';

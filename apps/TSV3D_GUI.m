@@ -412,7 +412,7 @@ classdef TSV3D_GUI < matlab.apps.AppBase
             global runEnvironment_;
             clc;
             runEnvironment_ = 0;
-            [fileName, dataPath] = uigetfile({'*.carti'; '*.stress'}, 'Select a Stress Field File to Open');
+            [fileName, dataPath] = uigetfile({'*.TSVcarti'; '*.TSV'}, 'Select a Stress Field File to Open');
             %[fileName, dataPath] = uigetfile('*.*', 'Select a Stress Field File to Open');
             if isnumeric(fileName) || isnumeric(dataPath), return; end
             userInterface_ = InterfaceStruct();

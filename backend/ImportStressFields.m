@@ -32,7 +32,7 @@ function ImportStressFields(fileName)
 	%%Read mesh and cartesian stress field
 	[~,~,dataType] = fileparts(fileName);
 	switch dataType
-		case '.carti'
+		case '.TSVcarti'
 			meshType_ = 'CARTESIAN_GRID';	
 			fid = fopen(fileName, 'r');
 			%%Mesh
@@ -91,7 +91,7 @@ function ImportStressFields(fileName)
 			%%Recover Cartesian Mesh
 			RecoverCartesianMesh();
 			numNodesPerEle_ = 8;
-		case '.stress'
+		case '.TSV'
 			fid = fopen(fileName, 'r');
 			fgetl(fid);
 			tmp = fscanf(fid, '%s %s %s', 3);
@@ -102,17 +102,17 @@ function ImportStressFields(fileName)
 				otherwise, error('Un-supported Stress Data!');
 			end			
 			domainType = fscanf(fid, '%s', 1);
-			if ~strcmp(domainType, 'Solid'), warning('Un-supported Data!'); return; end			
+			if ~strcmp(domainType, 'Solid'), error('Un-supported Data!'); end			
 			meshType_ = fscanf(fid, '%s', 1);
-			if ~(strcmp(meshType_, 'Hex') || strcmp(meshType_, 'Tet')), warning('Un-supported Mesh!'); return; end
+			if ~(strcmp(meshType_, 'Hex') || strcmp(meshType_, 'Tet')), error('Un-supported Data!'); end
 			meshOrder = fscanf(fid, '%d', 1);
 			if 1~=meshOrder, warning('Un-supported Mesh!'); return; end
 			startReadingVertices = fscanf(fid, '%s', 1);
-			if ~strcmp(startReadingVertices, 'Vertices:'), warning('Un-supported Data!'); return; end
+			if ~strcmp(startReadingVertices, 'Vertices:'), error('Un-supported Data!'); end
 			numNodes_ = fscanf(fid, '%d', 1);
 			nodeCoords_ = fscanf(fid, '%e %e %e', [3, numNodes_])';
 			startReadingElements = fscanf(fid, '%s', 1);
-			if ~strcmp(startReadingElements, 'Elements:'), warning('Un-supported Data!'); return; end
+			if ~strcmp(startReadingElements, 'Elements:'), error('Un-supported Data!'); end
 			numEles_ = fscanf(fid, '%d', 1);
 			switch meshType_
 				case 'Hex'
@@ -121,17 +121,17 @@ function ImportStressFields(fileName)
 					eNodMat_ = fscanf(fid, '%d %d %d %d', [4, numEles_])'; 
 			end
 			startReadingLoads = fscanf(fid, '%s %s', 2); 
-			if ~strcmp(startReadingLoads, 'NodeForces:'), warning('Un-supported Data!'); return; end
+			if ~strcmp(startReadingLoads, 'NodeForces:'), error('Un-supported Data!'); end
 			numLoadedNodes = fscanf(fid, '%d', 1);
 			if numLoadedNodes>0, loadingCond_ = fscanf(fid, '%d %e %e %e', [4, numLoadedNodes])'; else, loadingCond_ = []; end
 
 			startReadingFixations = fscanf(fid, '%s %s', 2);
-			if ~strcmp(startReadingFixations, 'FixedNodes:'), warning('Un-supported Data!'); return; end
+			if ~strcmp(startReadingFixations, 'FixedNodes:'), error('Un-supported Data!'); end
 			numFixedNodes = fscanf(fid, '%d', 1);
 			if numFixedNodes>0, fixingCond_ = fscanf(fid, '%d', [1, numFixedNodes])'; else, fixingCond_ = []; end	
 
 			startReadingStress = fscanf(fid, '%s %s', 2); 
-			if ~strcmp(startReadingStress, 'CartesianStress:'), warning('Un-supported Data!'); return; end
+			if ~strcmp(startReadingStress, 'CartesianStress:'), error('Un-supported Data!'); end
 			numStressComponents = fscanf(fid, '%d', 1);
 			cartesianStressField_ = fscanf(fid, '%e %e %e %e %e %e', [6, numStressComponents])';		
 			fclose(fid);

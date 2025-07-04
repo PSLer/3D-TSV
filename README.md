@@ -125,7 +125,7 @@ All demo datasets are included in the code repository.
 
 To facilitate the use of ANSYS and ABAQUS in conjunction with 3D-TSV, we briefly explore how to adapt the stress
 simulation results by ANSYS or ABAQUS to 3D-TSV, i.e., how to extract the required information from the two software
-packages and export it in the required format (`.stress`) for import in 3D-TSV.
+packages and export it in the required format (`.TSV`) for import in 3D-TSV.
 
 ## 6.1 ANSYS Mechanical APDL user
 
