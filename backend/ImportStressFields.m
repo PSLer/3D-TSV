@@ -61,8 +61,6 @@ function ImportStressFields(fileName)
 			numValidEles = fscanf(fid, '%d', 1);
 			tmp = fscanf(fid, '%s', 1);
 			validElements = fscanf(fid, '%d', [1, numValidEles])';
-            % validElements = validElements + 1;
-			% if 0==min(validElements), validElements = validElements + 1; end	
 			cellVolume = zeros(nelx_*nely_*nelz_,1);
 			cellVolume(validElements) = 1;
 			voxelizedVolume_ = reshape(cellVolume, nely_, nelx_, nelz_);	
@@ -71,17 +69,13 @@ function ImportStressFields(fileName)
 			tmp = fscanf(fid, '%s %s %s %s %d', 5);
 			tmp = fscanf(fid, '%s %s', 2); numLoadedNodes = fscanf(fid, '%d', 1);
 			if numLoadedNodes>0
-				loadingCond_ = fscanf(fid, '%d %f %f %f', [4, numLoadedNodes])'; 
-                % loadingCond_(:,1) = loadingCond_(:,1)+1;
-				% if 0==min(loadingCond_(:,1)), loadingCond_(:,1) = loadingCond_(:,1)+1; end	
+				loadingCond_ = fscanf(fid, '%d %f %f %f', [4, numLoadedNodes])'; 	
 			else
 				loadingCond_ = [];
 			end
 			tmp = fscanf(fid, '%s %s', 2); numFixedNodes = fscanf(fid, '%d', 1);
 			if numFixedNodes>0
 				fixingCond_ = fscanf(fid, '%d', [1, numFixedNodes])';
-             	% fixingCond_ = fixingCond_+1;
-				% if 0==min(fixingCond_), fixingCond_ = fixingCond_+1; end
 			else
 				fixingCond_ = [];
 			end
@@ -327,7 +321,6 @@ function RecoverCartesianMesh()
 		eleCentroidList_(blockIndex(ii,1):blockIndex(ii,2),3) = sum(eleCentZ,2)/8;
 	end
 end
-
 
 function [boundaryFaceNodMat, boundaryFaceNodeCoords, nodState, boundaryNodes] = ExtractBoundaryInfoFromSolidMesh()
 	global numNodes_;
