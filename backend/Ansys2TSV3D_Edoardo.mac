@@ -1,0 +1,188 @@
+!! Edit by - Edoardo
+!! =================================================================
+!! SCRIPT: Ansys2TSV3D.mac
+!! Author: CX Meng
+!! Applicable to ANSYS
+!! Write the node, element, boundary and stress information of the model
+
+
+! -----------------------------------------------------------------
+! Configuration (Edit these 2 variables)
+! -----------------------------------------------------------------
+
+name_file_out = 'data_ansys'  ! Output file name (extension .TSV)
+type_mesh_out = 'HEX'        ! set 'HEX' (es. SOLID185) or 'TET' (es. SOLID285)
+
+! Tip: After running the Ansys2TSV3D.mac file on Ansys, rename the data_ansys file in your folder if you do not want to overwrite the old export data with the new one.
+! -----------------------------------------------------------------
+
+*CFOPEN, %name_file_out%, 'TSV', , ' '
+
+! -----------------------------------------------------------------
+! Post-processing, load last result and count entities
+! -----------------------------------------------------------------
+
+/POST1
+SET,LAST
+ALLSEL,ALL
+
+*GET, ELEMENTNUM, ELEM, 0, COUNT
+*GET, NODENUM,   NODE, 0, COUNT
+
+! -----------------------------------------------------------------
+! Element type (HEX8 / TET10)
+! -----------------------------------------------------------------
+
+*IF, type_mesh_out, EQ, 'HEX', THEN
+nodes_elem = 8
+*ELSEIF, type_mesh_out, EQ, 'TET', THEN
+nodes_elem = 4
+*ELSE
+*MSG,FATAL,'type_mesh_out' must be 'HEX' o 'TET'.
+*CFCLOS
+*ENDIF
+
+! -----------------------------------------------------------------
+! 1. Header
+! -----------------------------------------------------------------
+
+*VWRITE,
+Version 2.0
+*VWRITE,
+Stress Data Type: NODE
+*IF, type_mesh_out, EQ, 'HEX', THEN
+*VWRITE,
+Solid Hex 1
+*ELSE
+*VWRITE,
+Solid Tet 1
+*ENDIF
+
+! -----------------------------------------------------------------
+! 2. Vertices Information Output 
+! -----------------------------------------------------------------
+
+*VWRITE,NODENUM
+Vertices: %I
+*DO,I,1,NODENUM,1
+*VWRITE,NX(I),NY(I),NZ(I)
+%14.6e%14.6e%14.6e
+*ENDDO
+
+! -----------------------------------------------------------------
+! 3. Element Information Output
+! -----------------------------------------------------------------
+
+*VWRITE, ELEMENTNUM
+Elements: %I
+
+*DO, I,1,ELEMENTNUM,1
+*IF, nodes_elem, EQ, 8, THEN  ! Hex8 elements
+*VWRITE,NELEM(I,1),NELEM(I,2),NELEM(I,3),NELEM(I,4),NELEM(I,5),NELEM(I,6),NELEM(I,7),NELEM(I,8)
+%I %I %I %I %I %I %I %I
+
+*ELSEIF, nodes_elem, EQ, 4, THEN ! Tet4 elements
+*VWRITE,NELEM(I,1),NELEM(I,2),NELEM(I,3),NELEM(I,4)
+%I %I %I %I
+*ENDIF
+*ENDDO
+
+! -----------------------------------------------------------------
+! 4. NodeForces Information Output 
+! -----------------------------------------------------------------
+
+nsel,s,f,f,-1e9,1e9
+cm,load_node,node
+cmsel,s,load_node
+
+*get,xmin,node,0,num,min
+
+*get,numx,node,0,count
+
+*del,xarry_force
+
+*dim,xarry_force,array,1,numx
+
+xarry_force(1,1)=xmin
+
+xx=xmin
+
+*VWRITE,numx
+Node Forces: %I
+
+*get,fx,node,xmin,f,fx
+*get,fy,node,xmin,f,fy
+*get,fz,node,xmin,f,fz
+*VWRITE,xmin,fx,fy,fz
+%I %14.6f%14.6f%14.6f
+*do,i,2,numx
+  
+xx=ndnext(xx)
+
+xarry_force(1,i)=xx
+
+*get,fx1,node,xx,f,fx
+*get,fy1,node,xx,f,fy
+*get,fz1,node,xx,f,fz
+*VWRITE,xx,fx1,fy1,fz1
+%I %14.6f%14.6f%14.6f
+*enddo
+
+! -----------------------------------------------------------------
+! 5. FixedNodes Information Output 
+! -----------------------------------------------------------------
+
+nsel,s,d,u
+cm,fix_node,node
+cmsel,s,fix_node
+*get,xmin,node,0,num,min
+
+*get,numx,node,0,count
+
+*del,xarry_fix
+
+*dim,xarry_fix,array,1,numx
+
+xarry_fix(1,1)=xmin
+
+xx=xmin
+
+*VWRITE,numx
+Fixed Nodes: %I
+*VWRITE,xmin
+%I
+*do,i,2,numx
+  
+xx=ndnext(xx)
+
+xarry_fix(1,i)=xx
+
+*VWRITE,xx
+%I
+*enddo
+
+! -----------------------------------------------------------------
+! 6. Stress Information Output (CartesianStress)
+! -----------------------------------------------------------------
+
+*VWRITE,NODENUM
+Cartesian Stress: %I
+*DO,I,1,NODENUM,1
+*GET,S_1,NODE,I,S,X 
+*GET,S_2,NODE,I,S,Y 
+*GET,S_3,NODE,I,S,Z 
+*GET,S_4,NODE,I,S,YZ 
+*GET,S_5,NODE,I,S,XZ 
+*GET,S_6,NODE,I,S,XY 
+*vwrite,S_1,S_2,S_3,S_4,S_5,S_6
+(6(1pe14.6))
+*ENDDO
+
+*CFCLOS
+
+allsel,all
+
+! -----------------------------------------------------------------
+! close
+! -----------------------------------------------------------------
+

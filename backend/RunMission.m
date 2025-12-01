@@ -97,7 +97,10 @@ function [opt, pslDataNameOutput] = RunMission(userInterface)
     %%4. Building Hierarchy
     BuildPSLs4Hierarchy();
 	
-	%%5. Print Results
+	%%5. Write&Print Results
+	[~,~,fileExtension] = fileparts(dataName_);
+	pslDataNameOutput = strcat(erase(dataName_, fileExtension), '_psl.dat');
+	ExportResult(pslDataNameOutput);
 	opt = 1;
 	tEnd = toc(tStart);
 	PrintAlgorithmStatistics(tEnd);
